@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: interbotix_xsarm_descriptions
+    relative_path: urdf/aloha_vx300s.urdf.xacro
+    xacro_args: robot_name:=follower_left base_link_frame:=base_link use_gripper:=true show_ar_tag:=false show_gripper_bar:=true show_gripper_fingers:=true use_world_frame:=true hardware_type:=actual
+  srdf:
+    relative_path: config/aloha_vx300s.srdf
+  package_settings:
+    author_name: Vignesh Thondikulam
+    author_email: vignesh.tho2006@gmail.com
+    generated_timestamp: 1790806539

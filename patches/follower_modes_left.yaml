@@ -1,0 +1,18 @@
+port: /dev/ttyDXL_follower_left
+
+groups:
+  arm:
+    operating_mode: position
+    profile_type: velocity
+    profile_velocity: 0
+    profile_acceleration: 0
+    torque_enable: true
+
+singles:
+  gripper:
+    # Motor-angle commands in radians; calibrated closed/open: 0.6197 / 1.6214.
+    operating_mode: position
+    profile_type: velocity
+    profile_velocity: 30
+    profile_acceleration: 10
+    torque_enable: true
