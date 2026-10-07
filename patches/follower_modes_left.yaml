@@ -4,8 +4,8 @@ groups:
   arm:
     operating_mode: position
     profile_type: velocity
-    profile_velocity: 0
-    profile_acceleration: 0
+    profile_velocity: 5
+    profile_acceleration: 2
     torque_enable: true
 
 singles:
@@ -13,6 +13,6 @@ singles:
     # Motor-angle commands in radians; calibrated closed/open: 0.6197 / 1.6214.
     operating_mode: position
     profile_type: velocity
-    profile_velocity: 4
-    profile_acceleration: 1
+    profile_velocity: 5
+    profile_acceleration: 2
     torque_enable: true
