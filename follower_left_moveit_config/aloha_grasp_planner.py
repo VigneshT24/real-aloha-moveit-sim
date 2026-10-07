@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import rclpy
 import time
+import subprocess
 from geometry_msgs.msg import PoseStamped
 from moveit.planning import MoveItPy
 from moveit.core.robot_state import RobotState
+from interbotix_xs_msgs.msg import JointSingleCommand, JointGroupCommand
 
 class AlohaGraspPlanner:
     def __init__(self):
@@ -15,37 +17,34 @@ class AlohaGraspPlanner:
         self.aloha_moveit = MoveItPy(node_name="aloha_moveit_py")
 
         # load the planning groups from setup assistant
-        self.arm = self.aloha_moveit.get_planning_component("interbotix_arm")
-        self.gripper = self.aloha_moveit.get_planning_component("interbotix_gripper")
+        self.gripper_pub = self.node.create_publisher(JointSingleCommand, '/follower_left/commands/joint_single', 10)
+        self.arm_pub = self.node.create_publisher(JointGroupCommand, '/follower_left/commands/joint_group', 10)
 
         # sub to yolo perception node output using self.node
-        self.subscription = self.node.create_subscription(
-            PoseStamped, '/grasp_pose', self.grasp_callback, 10
-        )
+        self.subscription = self.node.create_subscription(PoseStamped, '/grasp_pose', self.grasp_callback, 10)
 
         self.node.get_logger().info("Grasp Planner Ready. Waiting for YOLO detections on /grasp_pose.")
-        self.node.get_logger().info("UPDATED CODE IS RUNNING!")
+        self.node.get_logger().info("(6!) UPDATED CODED (6!)")
 
     def grasp_callback(self, msg: PoseStamped):
         self.node.get_logger().info(f"Target Acquired := X: {msg.pose.position.x:.3f}, Y: {msg.pose.position.y:.3f}, Z: {msg.pose.position.z:.3f}")
+        self.node.get_logger().info("Publishing raw OPEN command directly to LEFT FOLLOWER ARM ALOHA")
 
-        self.node.get_logger().info("Performing basic open gripper action.")
+        up_msg = JointSingleCommand()
+        up_msg.name = 'shoulder'
+        up_msg.cmd = 0.05
+        self.gripper_pub.publish(up_msg)
 
-        # create arm wake up state
-        arm_state = RobotState(self.aloha_moveit.get_robot_model())
-        arm_state.set_to_default_values()
-        arm_state.set_joint_group_positions("interbotix_arm", [0.0, -0.8, 0.0, 0.0, 0.8, 0.0])
+        self.node.get_logger().info("Shoulder up command executed.")
+        time.sleep(3)
+        # self.node.get_logger().info("Publishing raw OPEN commmand directly to LEFT FOLLOWER ARM ALOHA")
 
-        self.arm.set_start_state_to_current_state()
-        self.arm.set_goal_state(robot_state=arm_state)
+        # down_msg = JointSingleCommand()
+        # down_msg.name = 'shoulder'
+        # down_msg.cmd = -0.1
+        # self.gripper_pub.publish(down_msg)
 
-        arm_state_plan = self.arm.plan()
-
-        if arm_state_plan:
-            self.aloha_moveit.execute("interbotix_arm", arm_state_plan.trajectory, blocking=True)
-            self.node.get_logger().info("Successfully moved the entire arm")
-        else:
-            self.node.get_logger().error("Arm unable to move to goal position")
+        # self.node.get_logger().info("Gripper close command executed.")
 
 def main(args=None):
     # initialize the ros2
@@ -58,7 +57,16 @@ def main(args=None):
         # spin the specific subscriber node, not the class
         rclpy.spin(planner.node)
     except KeyboardInterrupt:
-        planner.node.get_logger().info("Shutting down planner node.")
+        planner.node.get_logger().warn("Ctrl+C detected! MoveIt context dying, using CLI override to save arm...")
+
+        emergency_cmd = (
+            "ros2 topic pub --once /follower_left/commands/joint_group "
+            "interbotix_xs_msgs/msg/JointGroupCommand "
+            "\"{name: 'arm', cmd: [-0.066, -1.850, 1.595, 0.094, -1.913, -0.081]}\""
+        )
+        subprocess.run(emergency_cmd, shell=True)
+        
+        print("Emergency CLI command sent. Safely shutting down.")
     finally:
         # clean up node safely when Ctrl-C is pressed
         planner.node.destroy_node()
