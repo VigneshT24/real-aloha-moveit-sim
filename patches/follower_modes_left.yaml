@@ -4,8 +4,13 @@ groups:
   arm:
     operating_mode: position
     profile_type: velocity
+<<<<<<< HEAD
     profile_velocity: 5
     profile_acceleration: 2
+=======
+    profile_velocity: 15
+    profile_acceleration: 8
+>>>>>>> 4ab42fa (updated code and it currently works as a prototype)
     torque_enable: true
 
 singles:
@@ -13,6 +18,11 @@ singles:
     # Motor-angle commands in radians; calibrated closed/open: 0.6197 / 1.6214.
     operating_mode: position
     profile_type: velocity
+<<<<<<< HEAD
     profile_velocity: 5
     profile_acceleration: 2
+=======
+    profile_velocity: 15
+    profile_acceleration: 8
+>>>>>>> 4ab42fa (updated code and it currently works as a prototype)
     torque_enable: true
