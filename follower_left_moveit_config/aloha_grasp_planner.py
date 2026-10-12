@@ -28,6 +28,7 @@ class AlohaGraspPlanner:
         self.subscription = self.node.create_subscription(PoseStamped, '/grasp_pose', self.grasp_callback, 10)
 
         self.node.get_logger().info("Grasp Planner Ready. Waiting for YOLO detections on /grasp_pose.")
+        self.node.get_logger().info("(13!) UPDATED CODED (13!)")
 
     def grasp_callback(self, msg: PoseStamped):
         if self.is_executing:
@@ -44,12 +45,20 @@ class AlohaGraspPlanner:
             self.node.get_logger().info(f"Target Acquired := X: {msg.pose.position.x:.3f}, Y: {msg.pose.position.y:.3f}, Z: {msg.pose.position.z:.3f}")
             self.node.get_logger().info("Publishing raw OPEN command directly to LEFT FOLLOWER ARM ALOHA")
 
-            up_msg = JointSingleCommand()
-            up_msg.name = 'wrist_angle'
-            up_msg.cmd = 0.01
-            self.gripper_pub.publish(up_msg)
+            shoulder_msg = JointSingleCommand()
+            shoulder_msg.name = 'shoulder'
+            shoulder_msg.cmd = 0.01
+            self.gripper_pub.publish(shoulder_msg)
 
-            self.node.get_logger().info("Wrist up command executed.")
+            self.node.get_logger().info("Shoulder up command executed.")
+            time.sleep(4.0)
+
+            elbow_msg = JointSingleCommand()
+            elbow_msg.name = 'elbow'
+            elbow_msg.cmd = 0.05
+            self.gripper_pub.publish(elbow_msg)
+
+            self.node.get_logger().info("Elbow up command executed.")
             time.sleep(4.0)
 
             open_gripper = JointSingleCommand()
