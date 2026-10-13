@@ -44,6 +44,15 @@ ros2 topic pub --once /grasp_pose geometry_msgs/msg/PoseStamped "{header: {frame
 
 You should now see the left-follower arm successfully move.
 
+### 3. Post-running procedure
+
+Wait until the arm has finished the action and stopped moving. Then shut down carefully:
+
+1. Press `Ctrl + C` **once** in Terminal 2. The left follower arm should return to its original position.
+2. Once the arm is safely back in its original position, press `Ctrl + C` in Terminal 1.
+
+> **Warning:** If the arm does **not** return to its original position, do not continue as normal. Have one person hold the left follower arm while another presses `Ctrl + C` in Terminal 1. Then manually move the arm back to its original position. 
+
 ## After changing the code
 
 If you modify the code, rebuild the package in any free terminal:
