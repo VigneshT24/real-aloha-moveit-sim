@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+=#!/usr/bin/env python3
 import rclpy
 import time
 import subprocess
@@ -19,8 +19,6 @@ class AlohaGraspPlanner:
 
         self.arm_planner = self.aloha_moveit.get_planning_component("interbotix_arm")
 
-
-
         # prevent the commands from running in parallel and sequential instead
         self.is_executing = False
 
@@ -32,7 +30,7 @@ class AlohaGraspPlanner:
         self.subscription = self.node.create_subscription(PoseStamped, '/grasp_pose', self.grasp_callback, 10)
 
         self.node.get_logger().info("Grasp Planner Ready. Waiting for YOLO detections on /grasp_pose.")
-        self.node.get_logger().info("(16!) UPDATED CODED (16!)")
+        self.node.get_logger().info("(18!) UPDATED CODED (18!)")
 
     def grasp_callback(self, msg: PoseStamped):
         if self.is_executing:
@@ -95,8 +93,9 @@ def main(args=None):
         emergency_cmd = (
             "ros2 topic pub --once /follower_left/commands/joint_group "
             "interbotix_xs_msgs/msg/JointGroupCommand "
-            "\"{name: 'arm', cmd: [-0.066, -1.850, 1.595, 0.094, -1.8675, -0.081]}\""
+            "\"{name: 'arm', cmd: [-0.016, -1.850, 1.595, 0.010, -1.8675, -0.011]}\""
         )
+
         subprocess.run(emergency_cmd, shell=True)
         time.sleep(5)
         print("Emergency CLI command sent. Safely shutting down.")
